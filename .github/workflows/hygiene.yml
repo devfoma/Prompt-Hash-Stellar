@@ -1,0 +1,27 @@
+name: Repository Hygiene
+
+on:
+  pull_request:
+    branches: ["main", "develop"]
+  push:
+    branches: ["main", "develop"]
+
+permissions:
+  contents: read
+
+jobs:
+  check-conflict-markers:
+    name: Check for Merge Conflict Markers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Search for markers
+        run: |
+          if grep -rE "<<<<<<<|=======|>>>>>>>" . --exclude-dir=.git --exclude=yarn.lock; then
+            echo "Error: Found merge conflict markers in the repository."
+            exit 1
+          else
+            echo "No merge conflict markers found."
+          fi
