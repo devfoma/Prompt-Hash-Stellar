@@ -4,8 +4,8 @@ import { proxyrouter } from "./routes/proxyRoutes";
 import { promptRouter } from "./routes/promptRoutes";
 import { userRouter } from "./routes/userRoutes";
 import { chatRouter } from "./routes/chatRoutes";
-import { IndexerState } from "./models/IndexerState";
-import { startIndexer } from "./services/indexer";
+import { webhookRouter } from "./routes/webhookRoutes";
+import { versioningRouter } from "./routes/versioningRoutes";
 
 const app = express();
 
@@ -20,6 +20,8 @@ app.use("/api/prompts", promptRouter);
 app.use("/api/user", userRouter);
 
 app.use("/api/chat", chatRouter);
+app.use("/api/webhooks", webhookRouter);
+app.use("/api/versions", versioningRouter);
 
 app.get("/health", async (req, res) => {
   const state = await IndexerState.findOne({ key: "prompt_hash_contract" });

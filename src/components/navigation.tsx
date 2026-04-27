@@ -1,5 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
-import { Menu, MessageCircle, Search, ShoppingBag, User } from "lucide-react";
+import { Activity, Menu, MessageCircle, Search, ShoppingBag, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import DisplayWallet from "./DisplayWallet";
@@ -9,6 +9,7 @@ const navItems = [
   { to: "/sell", label: "Sell", icon: ShoppingBag },
   { to: "/chat", label: "Chat", icon: MessageCircle },
   { to: "/profile", label: "Profile", icon: User },
+  { to: "/status", label: "Status", icon: Activity },
 ];
 
 const linkClasses = ({ isActive }: { isActive: boolean }) =>
@@ -36,7 +37,9 @@ export function Navigation() {
               <div className="text-sm uppercase tracking-[0.28em] text-amber-300">
                 PromptHash
               </div>
-              <div className="text-xs text-slate-400">Stellar testnet marketplace</div>
+              <div className="text-xs text-slate-400">
+                Stellar testnet marketplace
+              </div>
             </div>
           </Link>
           <nav className="hidden items-center gap-2 md:flex">

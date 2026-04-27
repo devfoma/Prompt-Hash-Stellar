@@ -49,18 +49,10 @@ const promptSchema = new mongoose.Schema(
       ],
       default: "Other",
     },
-    onChainId: {
-      type: String,
-      unique: true,
-      sparse: true,
-    },
-    salesCount: {
+    currentVersionIndex: {
       type: Number,
-      default: 0,
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
+      default: 1,
+      min: 1,
     },
   },
   {
