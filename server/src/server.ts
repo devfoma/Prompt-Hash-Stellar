@@ -23,10 +23,22 @@ app.use("/api/chat", chatRouter);
 app.use("/api/webhooks", webhookRouter);
 app.use("/api/versions", versioningRouter);
 
-app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+app.get("/health", async (req, res) => {
+  const state = await IndexerState.findOne({ key: "prompt_hash_contract" });
+  res.json({
+    status: "ok",
+    indexer: {
+      lastProcessedLedger: state?.lastIndexedLedger || 0,
+      timestamp: new Date(),
+    },
+  });
 });
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
+
+  // STARTS THE INDEXER HERE
+  startIndexer().catch((err) => {
+    console.error("Failed to start Soroban Indexer:", err);
+  });
 });
