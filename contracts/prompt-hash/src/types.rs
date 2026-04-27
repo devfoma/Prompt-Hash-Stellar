@@ -38,6 +38,7 @@ pub enum DataKey {
     Reentrancy,
 }
 
+
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Prompt {
@@ -54,19 +55,6 @@ pub struct Prompt {
     pub price_stroops: i128,
     pub active: bool,
     pub sales_count: u64,
-}
-
-#[contracttype]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum DataKey {
-    Prompt(u128),
-    PromptCounter,
-    FeePercentage,
-    FeeWallet,
-    XlmAddress,
-    CreatorPrompts(Address),
-    BuyerPrompts(Address),
-    Purchase(u128, Address),
 }
 
 pub trait PromptHashTrait {
