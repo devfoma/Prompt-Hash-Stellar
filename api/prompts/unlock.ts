@@ -49,21 +49,30 @@ async function handler(req: any, res: any) {
   const clientIp = (req.headers["x-forwarded-for"] || req.socket.remoteAddress) as string;
   const { token, promptId, address, signedMessage } = req.body ?? {};
 
-  // Rate limit by IP
-  const ipRateLimit = checkRateLimit("unlock", clientIp);
+  // Authenticated bucket: wallet address is present.
+  const isAuthenticated = Boolean(address);
+
+  // Rate limit by IP (unauthenticated bucket — strictest guard).
+  const ipRateLimit = await checkRateLimit("unlock", clientIp, false);
   if (!ipRateLimit.success) {
     req.logger.warn({ clientIp }, "Rate limit exceeded for unlock (IP)");
     metrics.trackRateLimitHit("unlock_ip", clientIp);
+    res.setHeader("X-RateLimit-Limit", ipRateLimit.limit);
+    res.setHeader("X-RateLimit-Remaining", 0);
+    res.setHeader("X-RateLimit-Reset", ipRateLimit.reset);
     res.status(429).json({ error: "Too many requests. Please try again later." });
     return;
   }
 
-  // Rate limit by wallet if provided
+  // Rate limit by wallet address (authenticated bucket — per-wallet brute-force guard).
   if (address) {
-    const walletRateLimit = checkRateLimit("unlock", String(address));
+    const walletRateLimit = await checkRateLimit("unlock", String(address), isAuthenticated);
     if (!walletRateLimit.success) {
       req.logger.warn({ address }, "Rate limit exceeded for unlock (Wallet)");
       metrics.trackRateLimitHit("unlock_wallet", String(address));
+      res.setHeader("X-RateLimit-Limit", walletRateLimit.limit);
+      res.setHeader("X-RateLimit-Remaining", 0);
+      res.setHeader("X-RateLimit-Reset", walletRateLimit.reset);
       res.status(429).json({ error: "Too many unlock attempts for this wallet." });
       return;
     }
